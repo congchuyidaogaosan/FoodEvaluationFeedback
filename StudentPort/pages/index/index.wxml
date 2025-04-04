@@ -1,0 +1,48 @@
+<view class="container">
+  <!-- 搜索栏 -->
+  <view class="search-bar">
+    <input class="search-input" placeholder="搜索菜品" bindinput="onSearch" />
+  </view>
+
+  <!-- 公告栏 -->
+  <view class="notice-bar">
+    <view class="notice-title">最新公告</view>
+    <view class="notice-list">
+      <view class="notice-item" wx:for="{{notices}}" wx:key="id">
+        <view class="notice-content">{{item.content}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 分类栏 -->
+  <view class="category-bar">
+    <view class="category-title">菜品分类</view>
+    <view class="category-list">
+      <view class="category-item" wx:for="{{categories}}" wx:key="id" bindtap="onCategoryTap" data-id="{{item.id}}">
+        <view class="category-content {{currentCategory === item.id ? 'active' : ''}}">
+          <image class="category-icon" src="{{item.icon}}" mode="aspectFit"></image>
+          <view class="category-name">{{item.name}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 菜品列表 -->
+  <view class="dish-list">
+    <view class="dish-item" wx:for="{{dishes}}" wx:key="id" bindtap="navigateToDetail" data-id="{{item.id}}">
+      <image class="dish-image" src="{{item.image}}" mode="aspectFill"></image>
+      <view class="dish-info">
+        <view class="dish-name">{{item.name}}</view>
+        <view class="dish-price">¥{{item.price}}</view>
+        <view class="dish-rating">
+          <text class="rating-stars">★★★★★</text>
+          <text class="rating-score">{{item.rating}}分</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading" wx:if="{{loading}}">加载中...</view>
+  <view class="empty" wx:if="{{!loading && dishes.length === 0}}">暂无菜品</view>
+</view> 

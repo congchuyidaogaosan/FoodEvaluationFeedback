@@ -1,0 +1,18 @@
+<view class="container">
+  <view class="login-box">
+    <view class="title">食堂评价系统</view>
+    <view class="subtitle">欢迎使用食堂评价系统</view>
+    
+    <view wx:if="{{!isLogin}}" class="login-section">
+      <button class="login-btn" type="primary" bindtap="wxLogin">
+        微信一键登录
+      </button>
+    </view>
+
+    <view wx:else class="user-info">
+      <image class="avatar" src="{{userInfo.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+      <view class="nickname">{{userInfo.nickName || '用户'}}</view>
+      <button class="logout-btn" bindtap="logout">退出登录</button>
+    </view>
+  </view>
+</view> 

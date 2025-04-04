@@ -1,0 +1,48 @@
+<view class="container">
+  <view wx:if="{{loading}}" class="loading">
+    <text>加载中...</text>
+  </view>
+
+  <block wx:else>
+    <view class="evaluation-list">
+      <block wx:for="{{evaluations}}" wx:key="id">
+        <view class="evaluation-item" bindtap="navigateToDishDetail" data-id="{{item.dishId}}">
+          <view class="dish-info">
+            <image class="dish-image" src="{{item.dishImage}}" mode="aspectFill"></image>
+            <view class="dish-detail">
+              <text class="dish-name">{{item.dishName}}</text>
+              <text class="evaluation-time">{{item.evalTime}}</text>
+            </view>
+          </view>
+
+          <view class="scores">
+            <view class="score-item">
+              <text>口味</text>
+              <text class="score">{{item.tasteScore}}分</text>
+            </view>
+            <view class="score-item">
+              <text>色泽</text>
+              <text class="score">{{item.colorScore}}分</text>
+            </view>
+            <view class="score-item">
+              <text>分量</text>
+              <text class="score">{{item.quantityScore}}分</text>
+            </view>
+            <view class="score-item">
+              <text>性价比</text>
+              <text class="score">{{item.pricePerformanceScore}}分</text>
+            </view>
+          </view>
+
+          <view class="comment" wx:if="{{item.comment}}">
+            <text>{{item.comment}}</text>
+          </view>
+        </view>
+      </block>
+    </view>
+
+    <view wx:if="{{!loading && evaluations.length === 0}}" class="empty">
+      <text>暂无评价记录</text>
+    </view>
+  </block>
+</view> 

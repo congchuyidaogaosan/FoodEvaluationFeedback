@@ -1,0 +1,35 @@
+<view class="container">
+  <view class="loading" wx:if="{{loading}}">加载中...</view>
+  <view class="user-card" wx:else>
+    <view class="user-info-row" bindtap="navigateToProfile">
+      <view class="avatar-section">
+        <button class="avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+          <image class="avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill"></image>
+        </button>
+        <view class="avatar-tip" wx:if="{{!hasUserInfo}}">点击选择头像</view>
+      </view>
+      <view class="user-info">
+        <view class="nickname-section">
+          <input class="nickname-input" type="nickname" placeholder="请输入昵称" value="{{userInfo.nickName}}" bindinput="onInputChange" wx:if="{{!hasUserInfo}}"/>
+          <view class="username" wx:else>{{userInfo.nickName}}</view>
+        </view>
+      </view>
+      <image class="arrow" src="/images/arrow-right.png" mode="aspectFit"></image>
+    </view>
+  </view>
+
+  <view class="function-list">
+    <view class="function-item" bindtap="navigateToMyEvaluations">
+      <text>我的评价</text>
+      <image class="arrow" src="/images/arrow-right.png" mode="aspectFit"></image>
+    </view>
+    <view class="function-item" bindtap="navigateToFeedback">
+      <text>我的反馈</text>
+      <image class="arrow" src="/images/arrow-right.png" mode="aspectFit"></image>
+    </view>
+  </view>
+
+  <view class="logout-btn" bindtap="logout">
+    <text>退出登录</text>
+  </view>
+</view> 

@@ -1,0 +1,85 @@
+<view class="container">
+  <view wx:if="{{loading}}" class="loading">
+    <text>加载中...</text>
+  </view>
+
+  <block wx:else>
+    <!-- 菜品信息 -->
+    <view class="dish-info">
+      <image class="dish-image" src="{{dishInfo.imageUrl}}" mode="aspectFill"></image>
+      <view class="dish-detail">
+        <text class="dish-name">{{dishInfo.name}}</text>
+        <text class="dish-price">¥{{dishInfo.price}}</text>
+      </view>
+    </view>
+
+    <!-- 评分区域 -->
+    <view class="evaluation-form">
+      <view class="score-item">
+        <text>口味评分</text>
+        <slider 
+          min="0" 
+          max="10" 
+          value="{{scores.taste}}" 
+          show-value
+          bindchange="onScoreChange"
+          data-type="taste"
+        />
+      </view>
+
+      <view class="score-item">
+        <text>色泽评分</text>
+        <slider 
+          min="0" 
+          max="10" 
+          value="{{scores.color}}" 
+          show-value
+          bindchange="onScoreChange"
+          data-type="color"
+        />
+      </view>
+
+      <view class="score-item">
+        <text>分量评分</text>
+        <slider 
+          min="0" 
+          max="10" 
+          value="{{scores.quantity}}" 
+          show-value
+          bindchange="onScoreChange"
+          data-type="quantity"
+        />
+      </view>
+
+      <view class="score-item">
+        <text>性价比评分</text>
+        <slider 
+          min="0" 
+          max="10" 
+          value="{{scores.pricePerformance}}" 
+          show-value
+          bindchange="onScoreChange"
+          data-type="pricePerformance"
+        />
+      </view>
+
+      <!-- 评论区域 -->
+      <view class="comment-area">
+        <textarea 
+          class="comment-input"
+          placeholder="请输入您的评价..."
+          value="{{comment}}"
+          bindinput="onCommentChange"
+          maxlength="200"
+          auto-height
+        ></textarea>
+        <view class="word-count">{{comment.length}}/200</view>
+      </view>
+    </view>
+
+    <!-- 提交按钮 -->
+    <view class="submit-btn" bindtap="submitEvaluation" hover-class="btn-hover">
+      <text>{{submitting ? '提交中...' : '提交评价'}}</text>
+    </view>
+  </block>
+</view> 
