@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.restaurant.mapper.EvalStatisticsMapper">
+
+    <resultMap id="BaseResultMap" type="com.restaurant.domain.EvalStatistics">
+            <id property="statId" column="stat_id" jdbcType="INTEGER"/>
+            <result property="dishId" column="dish_id" jdbcType="INTEGER"/>
+            <result property="averageScore" column="average_score" jdbcType="DECIMAL"/>
+            <result property="favorableRate" column="favorable_rate" jdbcType="DECIMAL"/>
+            <result property="unfavorableRate" column="unfavorable_rate" jdbcType="DECIMAL"/>
+            <result property="statTime" column="stat_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        stat_id,dish_id,average_score,
+        favorable_rate,unfavorable_rate,stat_time
+    </sql>
+</mapper>

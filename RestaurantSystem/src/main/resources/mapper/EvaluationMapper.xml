@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.restaurant.mapper.EvaluationMapper">
+
+    <resultMap id="BaseResultMap" type="com.restaurant.domain.Evaluation">
+            <id property="evalId" column="eval_id" jdbcType="INTEGER"/>
+            <result property="studentId" column="student_id" jdbcType="INTEGER"/>
+            <result property="dishId" column="dish_id" jdbcType="INTEGER"/>
+            <result property="tasteScore" column="taste_score" jdbcType="TINYINT"/>
+            <result property="colorScore" column="color_score" jdbcType="TINYINT"/>
+            <result property="quantityScore" column="quantity_score" jdbcType="TINYINT"/>
+            <result property="pricePerformanceScore" column="price_performance_score" jdbcType="TINYINT"/>
+            <result property="comment" column="comment" jdbcType="VARCHAR"/>
+            <result property="evalTime" column="eval_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        eval_id,student_id,dish_id,
+        taste_score,color_score,quantity_score,
+        price_performance_score,comment,eval_time
+    </sql>
+</mapper>

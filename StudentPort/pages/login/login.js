@@ -15,7 +15,7 @@ Page({
     const token = wx.getStorageSync('token');
     if (token) {
       this.setData({ isLogin: true });
-      this.getUserInfo();
+      // this.getUserInfo();
     }
   },
 
@@ -27,16 +27,23 @@ Page({
           try {
             const loginRes = await userApi.wxLogin(res.code);
             wx.setStorageSync('token', loginRes.token);
-            this.setData({ isLogin: true });
-            this.getUserInfo();
+            wx.setStorageSync('userInfo', loginRes.userInfo);
+
+            this.setData({ isLogin: true,userInfo:loginRes.userInfo });
+            // this.getUserInfo();
             wx.showToast({
               title: '登录成功',
               icon: 'success'
             });
             // 登录成功后返回上一页
-            setTimeout(() => {
-              wx.navigateBack();
-            }, 1500);
+            // setTimeout(() => {
+            //   wx.navigateBack();
+            // }, 1500);
+            console.log("11")
+            wx.redirectTo({
+              url: 'page/index/index'
+            })
+
           } catch (error) {
             wx.showToast({
               title: '登录失败',

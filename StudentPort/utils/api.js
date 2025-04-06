@@ -1,4 +1,4 @@
-const baseUrl = 'http://localhost:8080/api'; // 替换为您的实际后端API地址
+const baseUrl = 'http://localhost:8081/api'; // 替换为您的实际后端API地址
 
 const request = (url, method, data) => {
   return new Promise((resolve, reject) => {
@@ -27,7 +27,7 @@ const request = (url, method, data) => {
 // 用户相关API
 const userApi = {
   // 微信登录
-  wxLogin: (code) => request('/user/wx-login', 'POST', { code }),
+  wxLogin: (code) => request('/WXLogin/setCode?code='+code, 'POST'),
   // 获取用户信息
   getUserInfo: () => request('/user/info', 'GET'),
   // 更新用户信息
