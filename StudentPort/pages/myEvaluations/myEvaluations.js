@@ -6,17 +6,21 @@ Page({
     loading: true
   },
 
-  onLoad: function() {
+  onLoad: function () {
     this.getMyEvaluations();
   },
 
   // 获取我的评价列表
-  getMyEvaluations: async function() {
+  getMyEvaluations: async function () {
+   let  info = wx.getStorageSync('userInfo')
+    
+
     try {
       const res = await evaluationApi.getMyEvaluations();
-      this.setData({ 
+      this.setData({
         evaluations: res.data,
-        loading: false
+        loading: false,
+        info:info,
       });
     } catch (error) {
       wx.showToast({
@@ -27,7 +31,7 @@ Page({
   },
 
   // 跳转到菜品详情
-  navigateToDishDetail: function(e) {
+  navigateToDishDetail: function (e) {
     const dishId = e.currentTarget.dataset.id;
     wx.navigateTo({
       url: `/pages/evaluation/evaluation?id=${dishId}`

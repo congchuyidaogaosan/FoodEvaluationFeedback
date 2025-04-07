@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping("DishCategory")
+@RequestMapping("/api/DishCategory")
 @RestController
 public class DishCategoryController {
 

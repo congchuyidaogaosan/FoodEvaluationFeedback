@@ -10,12 +10,18 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping("Evaluation")
+@RequestMapping("api/evaluations")
 @RestController
 public class EvaluationController {
 
     @Autowired
     private EvaluationService dishService;
+
+    @PostMapping("my")
+    public Result my(){
+        List<Evaluation> list = dishService.list();
+        return Result.ok(list);
+    }
 
 
     @GetMapping()

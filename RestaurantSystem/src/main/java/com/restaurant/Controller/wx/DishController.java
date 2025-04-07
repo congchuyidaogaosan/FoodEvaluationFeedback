@@ -1,5 +1,6 @@
 package com.restaurant.Controller.wx;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.restaurant.admin.Result;
 import com.restaurant.domain.Dish;
 import com.restaurant.service.DishService;
@@ -8,15 +9,33 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping("Dish")
+@RequestMapping("/api/dishes")
 @RestController
 public class DishController {
 
     @Autowired
     private DishService dishService;
 
+    @GetMapping("category/{id}")
+    public Result category(@PathVariable("id")Integer id){
+        QueryWrapper<Dish> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("category_id",id);
+        List<Dish> list = dishService.list(queryWrapper);
+        return Result.ok(list);
+    }
 
-    @GetMapping()
+
+    @GetMapping("special")
+    public Result special(){
+
+        QueryWrapper<Dish> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("is_special",1);
+        List<Dish> list = dishService.list(queryWrapper);
+        return Result.ok(list);
+    }
+
+
+    @GetMapping("")
     public Result list(){
         List<Dish> list = dishService.list();
         return Result.ok(list);

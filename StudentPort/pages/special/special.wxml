@@ -1,16 +1,16 @@
 <view class="container">
   <view class="special-list">
-    <block wx:for="{{specialDishes}}" wx:key="id">
-      <view class="special-item" bindtap="navigateToDishDetail" data-id="{{item.id}}">
-        <image class="dish-image" src="{{item.imageUrl}}" mode="aspectFill"></image>
+    <block wx:for="{{specialDishes}}" wx:key="dishId">
+      <view class="special-item" bindtap="navigateToDishDetail" data-id="{{item.dishId}}">
+        <image class="dish-image" src="{{item.url}}" mode="aspectFill"></image>
         <view class="dish-info">
-          <text class="dish-name">{{item.name}}</text>
+          <text class="dish-name">{{item.dishName}}</text>
           <view class="price-info">
-            <text class="original-price">原价: ¥{{item.originalPrice}}</text>
-            <text class="special-price">特价: ¥{{item.specialPrice}}</text>
+            <text class="original-price">原价: ¥{{item.price}}</text>
+            <text class="special-price">特价: ¥{{item.specialprice}}</text>
           </view>
           <view class="time-info">
-            <text>特价时间: {{item.startTime}} - {{item.endTime}}</text>
+          
           </view>
         </view>
       </view>
@@ -28,4 +28,4 @@
   <view wx:if="{{!loading && !hasMore && specialDishes.length > 0}}" class="no-more">
     <text>没有更多了</text>
   </view>
-</view> 
+</view>

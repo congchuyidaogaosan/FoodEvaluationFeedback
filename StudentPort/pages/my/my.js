@@ -15,11 +15,11 @@ Page({
     canIUseNicknameComp: wx.canIUse('input.type.nickname')
   },
 
-  onLoad: function() {
+  onLoad: function () {
     this.checkUserInfo();
   },
 
-  onShow: function() {
+  onShow: function () {
     // 每次页面显示时重新获取用户信息
     this.checkUserInfo();
   },
@@ -115,21 +115,21 @@ Page({
   },
 
   // 跳转到我的评价
-  navigateToMyEvaluations: function() {
+  navigateToMyEvaluations: function () {
     wx.navigateTo({
       url: '/pages/myEvaluations/myEvaluations'
     });
   },
 
   // 跳转到我的反馈
-  navigateToFeedback: function() {
+  navigateToFeedback: function () {
     wx.navigateTo({
       url: '/pages/feedback/feedback'
     });
   },
 
   // 退出登录
-  logout: function() {
+  logout: function () {
     wx.showModal({
       title: '提示',
       content: '确定要退出登录吗？',

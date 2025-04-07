@@ -25,6 +25,8 @@ public class DishCategory implements Serializable {
      */
     private String categoryName;
 
+    private String url;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 

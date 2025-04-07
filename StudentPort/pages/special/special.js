@@ -27,7 +27,7 @@ Page({
         pageSize: this.data.pageSize
       });
       
-      const newDishes = res.data.list || [];
+      const newDishes = res.data || [];
       const hasMore = newDishes.length === this.data.pageSize;
       
       this.setData({

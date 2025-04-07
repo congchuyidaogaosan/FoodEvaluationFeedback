@@ -51,6 +51,12 @@ public class Dish implements Serializable {
      */
     private Integer isSpecial;
 
+    private String url;
+
+    private String rating;
+
+    private Integer specialprice;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 

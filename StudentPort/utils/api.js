@@ -38,8 +38,9 @@ const userApi = {
 const dishApi = {
   // 获取特价菜品列表
   getSpecialDishes: (params) => request('/dishes/special', 'GET', params),
+  
   // 获取菜品分类列表
-  getCategories: () => request('/dishes/categories', 'GET'),
+  getCategories: () => request('/DishCategory', 'GET'),
   // 根据分类获取菜品列表
   getDishesByCategory: (categoryId) => request('/dishes/category/' + categoryId, 'GET'),
   // 获取菜品详情
@@ -53,7 +54,7 @@ const evaluationApi = {
   // 提交评价
   submitEvaluation: (data) => request('/evaluations', 'POST', data),
   // 获取我的评价列表
-  getMyEvaluations: () => request('/evaluations/my', 'GET'),
+  getMyEvaluations: (data) => request('/evaluations/my', 'post',data),
   // 获取菜品评价列表
   getDishEvaluations: (dishId) => request('/evaluations/dish/' + dishId, 'GET'),
   // 删除评价

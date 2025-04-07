@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping("Feedback")
+@RequestMapping("/api/notices")
 @RestController
 public class FeedbackController {
 
