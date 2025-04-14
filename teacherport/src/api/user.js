@@ -10,27 +10,26 @@ export function login(data) {
 }
 
 // 获取用户列表
-export function getUserList(params) {
+export function getUserList() {
   return request({
-    url: '/teacher/users',
-    method: 'get',
-    params
+    url: '/Student',
+    method: 'get'
   })
 }
 
 // 添加用户
 export function addUser(data) {
   return request({
-    url: '/teacher/users',
+    url: '/Student/save',
     method: 'post',
     data
   })
 }
 
 // 更新用户
-export function updateUser(id, data) {
+export function updateUser(data) {
   return request({
-    url: `/teacher/users/${id}`,
+    url: `/Student/update`,
     method: 'put',
     data
   })
@@ -39,7 +38,7 @@ export function updateUser(id, data) {
 // 删除用户
 export function deleteUser(id) {
   return request({
-    url: `/teacher/users/${id}`,
+    url: `/Student/del/${id}`,
     method: 'delete'
   })
 } 

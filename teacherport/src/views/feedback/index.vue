@@ -1,5 +1,5 @@
 <template>
-  <div class="feedback-container">
+  <div class="app-container">
     <div class="filter-container">
       <el-input
         v-model="listQuery.keyword"
@@ -8,6 +8,16 @@
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
+      <el-select
+        v-model="listQuery.isHandled"
+        placeholder="处理状态"
+        clearable
+        style="width: 120px"
+        class="filter-item"
+      >
+        <el-option label="未处理" :value="0" />
+        <el-option label="已处理" :value="1" />
+      </el-select>
       <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
       </el-button>
@@ -21,22 +31,31 @@
       highlight-current-row
       style="width: 100%;"
     >
-      <el-table-column label="ID" prop="id" align="center" width="80" />
-      <el-table-column label="用户" prop="userName" align="center" />
-      <el-table-column label="反馈内容" prop="content" align="center" />
-      <el-table-column label="回复内容" prop="reply" align="center" />
-      <el-table-column label="状态" prop="status" align="center">
+      <el-table-column label="ID" prop="feedbackId" align="center" width="80" />
+      <el-table-column label="用户ID" prop="studentId" align="center" width="80" />
+      <el-table-column label="反馈内容" prop="content" align="center" min-width="200" show-overflow-tooltip />
+      <el-table-column label="反馈时间" prop="feedbackTime" align="center" width="160" />
+      <el-table-column label="处理状态" align="center" width="100">
         <template slot-scope="{row}">
-          <el-tag :type="row.status === 1 ? 'success' : 'info'">
-            {{ row.status === 1 ? '已回复' : '未回复' }}
+          <el-tag :type="row.isHandled === 1 ? 'success' : 'info'">
+            {{ row.isHandled === 1 ? '已处理' : '未处理' }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" prop="createTime" align="center" />
+      <el-table-column label="处理结果" prop="handleResult" align="center" min-width="200" show-overflow-tooltip>
+        <template slot-scope="{row}">
+          <span>{{ row.handleResult || '暂无' }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" width="230">
         <template slot-scope="{row}">
-          <el-button type="primary" size="mini" @click="handleReply(row)">
-            回复
+          <el-button
+            v-if="row.isHandled === 0"
+            type="primary"
+            size="mini"
+            @click="handleReply(row)"
+          >
+            处理
           </el-button>
           <el-button
             size="mini"
@@ -57,7 +76,7 @@
       @pagination="getList"
     />
 
-    <el-dialog title="回复反馈" :visible.sync="dialogVisible">
+    <el-dialog title="处理反馈" :visible.sync="dialogVisible">
       <el-form
         ref="dataForm"
         :rules="rules"
@@ -65,11 +84,11 @@
         label-position="left"
         label-width="100px"
       >
-        <el-form-item label="反馈内容" prop="content">
+        <el-form-item label="反馈内容">
           <el-input v-model="temp.content" type="textarea" :rows="3" disabled />
         </el-form-item>
-        <el-form-item label="回复内容" prop="reply">
-          <el-input v-model="temp.reply" type="textarea" :rows="3" />
+        <el-form-item label="处理结果" prop="handleResult">
+          <el-input v-model="temp.handleResult" type="textarea" :rows="3" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -99,16 +118,17 @@ export default {
       listQuery: {
         page: 1,
         limit: 10,
-        keyword: undefined
+        keyword: undefined,
+        isHandled: undefined
       },
       dialogVisible: false,
       temp: {
-        id: undefined,
+        feedbackId: undefined,
         content: '',
-        reply: ''
+        handleResult: ''
       },
       rules: {
-        reply: [{ required: true, message: '请输入回复内容', trigger: 'blur' }]
+        handleResult: [{ required: true, message: '请输入处理结果', trigger: 'blur' }]
       }
     }
   },
@@ -119,9 +139,9 @@ export default {
     async getList() {
       this.listLoading = true
       try {
-        const { data } = await getFeedbackList(this.listQuery)
-        this.list = data.list
-        this.total = data.total
+        const response = await getFeedbackList(this.listQuery)
+        this.list = response.data
+        this.total = response.data.length
       } catch (error) {
         console.error('获取反馈列表失败:', error)
       }
@@ -142,13 +162,15 @@ export default {
       this.$refs['dataForm'].validate(async (valid) => {
         if (valid) {
           try {
-            const { id, reply } = this.temp
-            await replyFeedback(id, { reply })
+            await replyFeedback(this.temp.feedbackId, {
+              handleResult: this.temp.handleResult,
+              isHandled: 1
+            })
             this.dialogVisible = false
-            this.$message.success('回复成功')
+            this.$message.success('处理成功')
             this.getList()
           } catch (error) {
-            console.error('回复反馈失败:', error)
+            console.error('处理反馈失败:', error)
           }
         }
       })
@@ -160,7 +182,7 @@ export default {
         type: 'warning'
       }).then(async () => {
         try {
-          await deleteFeedback(row.id)
+          await deleteFeedback(row.feedbackId)
           this.$message.success('删除成功')
           this.getList()
         } catch (error) {
@@ -173,7 +195,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.feedback-container {
+.app-container {
   padding: 20px;
   
   .filter-container {
@@ -184,6 +206,16 @@ export default {
       vertical-align: middle;
       margin-bottom: 10px;
       margin-right: 10px;
+    }
+  }
+  
+  .el-table {
+    margin-top: 15px;
+  }
+  
+  .el-dialog {
+    .el-select {
+      width: 100%;
     }
   }
 }

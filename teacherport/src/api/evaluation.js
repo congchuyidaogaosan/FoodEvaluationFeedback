@@ -3,7 +3,7 @@ import request from '@/utils/request'
 // 获取评价列表
 export function getEvaluationList(params) {
   return request({
-    url: '/evaluation/list',
+    url: '/evaluations',
     method: 'get',
     params
   })
@@ -12,7 +12,7 @@ export function getEvaluationList(params) {
 // 获取评价详情
 export function getEvaluationDetail(id) {
   return request({
-    url: `/evaluation/${id}`,
+    url: `/evaluations/${id}`,
     method: 'get'
   })
 }
@@ -20,7 +20,7 @@ export function getEvaluationDetail(id) {
 // 回复评价
 export function replyEvaluation(id, data) {
   return request({
-    url: `/evaluation/${id}/reply`,
+    url: `/evaluations/${id}/reply`,
     method: 'post',
     data
   })
@@ -29,7 +29,7 @@ export function replyEvaluation(id, data) {
 // 删除评价
 export function deleteEvaluation(id) {
   return request({
-    url: `/evaluation/${id}`,
+    url: `/evaluations/${id}`,
     method: 'delete'
   })
 } 

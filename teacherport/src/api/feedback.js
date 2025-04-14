@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export function getFeedbackList(params) {
   return request({
-    url: '/feedback/list',
+    url: '/notices',
     method: 'get',
     params
   })
@@ -10,7 +10,7 @@ export function getFeedbackList(params) {
 
 export function replyFeedback(id, data) {
   return request({
-    url: `/feedback/${id}/reply`,
+    url: `/notices/${id}/reply`,
     method: 'post',
     data
   })
@@ -18,7 +18,7 @@ export function replyFeedback(id, data) {
 
 export function deleteFeedback(id) {
   return request({
-    url: `/feedback/${id}`,
+    url: `/notices/${id}`,
     method: 'delete'
   })
 } 

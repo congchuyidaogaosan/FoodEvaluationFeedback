@@ -1,7 +1,7 @@
 <template>
-  <div class="category-container">
+  <div class="app-container">
     <div class="filter-container">
-      <el-input
+      <!-- <el-input
         v-model="listQuery.name"
         placeholder="分类名称"
         style="width: 200px;"
@@ -10,7 +10,7 @@
       />
       <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
-      </el-button>
+      </el-button> -->
       <el-button class="filter-item" type="primary" icon="el-icon-plus" @click="handleCreate">
         添加分类
       </el-button>
@@ -24,10 +24,18 @@
       highlight-current-row
       style="width: 100%;"
     >
-      <el-table-column label="ID" prop="id" align="center" width="80" />
-      <el-table-column label="分类名称" prop="name" align="center" />
-      <el-table-column label="排序" prop="sort" align="center" width="100" />
-      <el-table-column label="创建时间" prop="createTime" align="center" />
+      <el-table-column label="ID" prop="categoryId" align="center" width="80" />
+      <el-table-column label="分类图片" align="center" width="120">
+        <template slot-scope="{row}">
+          <el-image
+            :src="row.url"
+            :preview-src-list="[row.url]"
+            style="width: 80px; height: 80px"
+            fit="cover"
+          />
+        </template>
+      </el-table-column>
+      <el-table-column label="分类名称" prop="categoryName" align="center" />
       <el-table-column label="操作" align="center" width="230">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
@@ -52,7 +60,7 @@
       @pagination="getList"
     />
 
-    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible">
+    <el-dialog :title="dialogStatus === 'create' ? '新增分类' : '编辑分类'" :visible.sync="dialogVisible">
       <el-form
         ref="dataForm"
         :rules="rules"
@@ -60,18 +68,18 @@
         label-position="left"
         label-width="100px"
       >
-        <el-form-item label="分类名称" prop="name">
-          <el-input v-model="temp.name" />
+        <el-form-item label="分类名称" prop="categoryName">
+          <el-input v-model="temp.categoryName" />
         </el-form-item>
-        <el-form-item label="排序" prop="sort">
-          <el-input-number v-model="temp.sort" :min="0" :max="999" />
+        <el-form-item label="图片链接" prop="url">
+          <el-input v-model="temp.url" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">
           取消
         </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
+        <el-button type="primary" @click="dialogStatus === 'create' ? createData() : updateData()">
           确定
         </el-button>
       </div>
@@ -98,15 +106,14 @@ export default {
       },
       dialogVisible: false,
       dialogStatus: '',
-      dialogTitle: '',
       temp: {
-        id: undefined,
-        name: '',
-        sort: 0
+        categoryId: undefined,
+        categoryName: '',
+        url: ''
       },
       rules: {
-        name: [{ required: true, message: '请输入分类名称', trigger: 'blur' }],
-        sort: [{ required: true, message: '请输入排序号', trigger: 'blur' }]
+        categoryName: [{ required: true, message: '请输入分类名称', trigger: 'blur' }],
+        url: [{ required: true, message: '请输入图片链接', trigger: 'blur' }]
       }
     }
   },
@@ -117,9 +124,9 @@ export default {
     async getList() {
       this.listLoading = true
       try {
-        const { data } = await getCategoryList(this.listQuery)
-        this.list = data.list
-        this.total = data.total
+        const response = await getCategoryList()
+        this.list = response.data
+        this.total = response.total
       } catch (error) {
         console.error('获取分类列表失败:', error)
       }
@@ -131,30 +138,29 @@ export default {
     },
     resetTemp() {
       this.temp = {
-        id: undefined,
-        name: '',
-        sort: 0
+        categoryId: undefined,
+        categoryName: '',
+        url: ''
       }
     },
     handleCreate() {
       this.resetTemp()
       this.dialogStatus = 'create'
-      this.dialogTitle = '添加分类'
       this.dialogVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    createData() {
+    async createData() {
       this.$refs['dataForm'].validate(async (valid) => {
         if (valid) {
           try {
             await addCategory(this.temp)
             this.dialogVisible = false
-            this.$message.success('添加成功')
+            this.$message.success('创建成功')
             this.getList()
           } catch (error) {
-            console.error('添加分类失败:', error)
+            console.error('创建分类失败:', error)
           }
         }
       })
@@ -162,18 +168,16 @@ export default {
     handleUpdate(row) {
       this.temp = Object.assign({}, row)
       this.dialogStatus = 'update'
-      this.dialogTitle = '编辑分类'
       this.dialogVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    updateData() {
+    async updateData() {
       this.$refs['dataForm'].validate(async (valid) => {
         if (valid) {
           try {
-            const { id } = this.temp
-            await updateCategory(id, this.temp)
+            await updateCategory(this.temp)
             this.dialogVisible = false
             this.$message.success('更新成功')
             this.getList()
@@ -190,7 +194,7 @@ export default {
         type: 'warning'
       }).then(async () => {
         try {
-          await deleteCategory(row.id)
+          await deleteCategory(row.categoryId)
           this.$message.success('删除成功')
           this.getList()
         } catch (error) {
@@ -203,7 +207,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.category-container {
+.app-container {
   padding: 20px;
   
   .filter-container {
@@ -214,6 +218,21 @@ export default {
       vertical-align: middle;
       margin-bottom: 10px;
       margin-right: 10px;
+    }
+  }
+  
+  .el-table {
+    margin-top: 15px;
+    
+    .el-image {
+      border-radius: 4px;
+      border: 1px solid #ebeef5;
+      transition: all 0.3s;
+      
+      &:hover {
+        transform: scale(1.05);
+        box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
+      }
     }
   }
 }

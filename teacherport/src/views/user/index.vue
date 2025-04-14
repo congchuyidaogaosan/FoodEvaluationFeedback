@@ -1,16 +1,16 @@
 <template>
-  <div class="user-container">
+  <div class="app-container">
     <div class="filter-container">
-      <el-input
-        v-model="listQuery.username"
-        placeholder="用户名"
+      <!-- <el-input
+        v-model="listQuery.keyword"
+        placeholder="搜索用户名"
         style="width: 200px;"
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
       <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
-      </el-button>
+      </el-button> -->
       <el-button class="filter-item" type="primary" icon="el-icon-plus" @click="handleCreate">
         添加用户
       </el-button>
@@ -24,23 +24,29 @@
       highlight-current-row
       style="width: 100%;"
     >
-      <el-table-column label="ID" prop="id" align="center" width="80" />
-      <el-table-column label="用户名" prop="username" align="center" />
-      <el-table-column label="角色" prop="role" align="center">
+      <el-table-column label="ID" prop="studentId" align="center" width="80" />
+      <el-table-column label="学号" prop="studentNumber" align="center">
         <template slot-scope="{row}">
-          <el-tag :type="row.role === 'admin' ? 'danger' : 'primary'">
-            {{ row.role === 'admin' ? '管理员' : '普通用户' }}
-          </el-tag>
+          <span>{{ row.studentNumber || '未设置' }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="状态" prop="status" align="center">
+      <el-table-column label="用户名" prop="username" align="center">
         <template slot-scope="{row}">
-          <el-tag :type="row.status === 1 ? 'success' : 'info'">
-            {{ row.status === 1 ? '启用' : '禁用' }}
-          </el-tag>
+          <span>{{ row.username || '未设置' }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" prop="createTime" align="center" />
+      <el-table-column label="联系方式" prop="contactInfo" align="center">
+        <template slot-scope="{row}">
+          <span>{{ row.contactInfo || '未设置' }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="OpenID" prop="openId" align="center" width="280">
+        <template slot-scope="{row}">
+          <el-tooltip class="item" effect="dark" :content="row.openId" placement="top">
+            <span>{{ row.openId }}</span>
+          </el-tooltip>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" width="230">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
@@ -65,7 +71,7 @@
       @pagination="getList"
     />
 
-    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible">
+    <el-dialog :title="dialogStatus === 'create' ? '新增用户' : '编辑用户'" :visible.sync="dialogVisible">
       <el-form
         ref="dataForm"
         :rules="rules"
@@ -73,30 +79,21 @@
         label-position="left"
         label-width="100px"
       >
+        <el-form-item label="学号" prop="studentNumber">
+          <el-input v-model="temp.studentNumber" />
+        </el-form-item>
         <el-form-item label="用户名" prop="username">
           <el-input v-model="temp.username" />
         </el-form-item>
-        <el-form-item label="密码" prop="password">
-          <el-input v-model="temp.password" type="password" />
-        </el-form-item>
-        <el-form-item label="角色" prop="role">
-          <el-select v-model="temp.role" placeholder="请选择">
-            <el-option label="管理员" value="admin" />
-            <el-option label="普通用户" value="user" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="状态" prop="status">
-          <el-radio-group v-model="temp.status">
-            <el-radio :label="1">启用</el-radio>
-            <el-radio :label="0">禁用</el-radio>
-          </el-radio-group>
+        <el-form-item label="联系方式" prop="contactInfo">
+          <el-input v-model="temp.contactInfo" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">
           取消
         </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
+        <el-button type="primary" @click="dialogStatus === 'create' ? createData() : updateData()">
           确定
         </el-button>
       </div>
@@ -119,23 +116,19 @@ export default {
       listQuery: {
         page: 1,
         limit: 10,
-        username: undefined
+        keyword: undefined
       },
       dialogVisible: false,
       dialogStatus: '',
-      dialogTitle: '',
       temp: {
-        id: undefined,
+        studentId: '',
+        studentNumber: '',
         username: '',
-        password: '',
-        role: 'user',
-        status: 1
+        contactInfo: ''
       },
       rules: {
-        username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-        password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
-        role: [{ required: true, message: '请选择角色', trigger: 'change' }],
-        status: [{ required: true, message: '请选择状态', trigger: 'change' }]
+        studentNumber: [{ required: true, message: '请输入学号', trigger: 'blur' }],
+        username: [{ required: true, message: '请输入用户名', trigger: 'blur' }]
       }
     }
   },
@@ -146,9 +139,11 @@ export default {
     async getList() {
       this.listLoading = true
       try {
-        const { data } = await getUserList(this.listQuery)
-        this.list = data.list
-        this.total = data.total
+        const response = await getUserList(this.listQuery)
+        // 直接使用返回的数组作为列表数据
+        this.list = response.data
+        // 设置总数为数组长度
+        this.total = response.data.length
       } catch (error) {
         console.error('获取用户列表失败:', error)
       }
@@ -160,51 +155,48 @@ export default {
     },
     resetTemp() {
       this.temp = {
-        id: undefined,
+        studentId: undefined,
+        studentNumber: '',
         username: '',
-        password: '',
-        role: 'user',
-        status: 1
+        contactInfo: ''
       }
     },
     handleCreate() {
       this.resetTemp()
       this.dialogStatus = 'create'
-      this.dialogTitle = '添加用户'
       this.dialogVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
-      })
-    },
-    createData() {
-      this.$refs['dataForm'].validate(async (valid) => {
-        if (valid) {
-          try {
-            await addUser(this.temp)
-            this.dialogVisible = false
-            this.$message.success('添加成功')
-            this.getList()
-          } catch (error) {
-            console.error('添加用户失败:', error)
-          }
-        }
       })
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row)
       this.dialogStatus = 'update'
-      this.dialogTitle = '编辑用户'
       this.dialogVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    updateData() {
+    async createData() {
       this.$refs['dataForm'].validate(async (valid) => {
         if (valid) {
           try {
-            const { id } = this.temp
-            await updateUser(id, this.temp)
+            await addUser(this.temp)
+            this.dialogVisible = false
+            this.$message.success('创建成功')
+            this.getList()
+          } catch (error) {
+            console.error('创建用户失败:', error)
+          }
+        }
+      })
+    },
+    async updateData() {
+      this.$refs['dataForm'].validate(async (valid) => {
+        if (valid) {
+          try {
+
+            await updateUser(this.temp)
             this.dialogVisible = false
             this.$message.success('更新成功')
             this.getList()
@@ -221,7 +213,7 @@ export default {
         type: 'warning'
       }).then(async () => {
         try {
-          await deleteUser(row.id)
+          await deleteUser(row.studentId)
           this.$message.success('删除成功')
           this.getList()
         } catch (error) {
@@ -234,7 +226,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.user-container {
+.app-container {
   padding: 20px;
   
   .filter-container {
@@ -245,6 +237,14 @@ export default {
       vertical-align: middle;
       margin-bottom: 10px;
       margin-right: 10px;
+    }
+  }
+  
+  .el-table {
+    margin-top: 15px;
+    
+    /deep/ .el-tooltip__popper {
+      max-width: 300px;
     }
   }
 }

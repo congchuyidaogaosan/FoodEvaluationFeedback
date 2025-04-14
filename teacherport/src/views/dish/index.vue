@@ -1,14 +1,14 @@
 <template>
-  <div class="dish-container">
+  <div class="app-container">
     <div class="filter-container">
-      <el-input
+      <!-- <el-input
         v-model="listQuery.name"
         placeholder="菜品名称"
         style="width: 200px;"
         class="filter-item"
         @keyup.enter.native="handleFilter"
-      />
-      <el-select
+      /> -->
+      <!-- <el-select
         v-model="listQuery.categoryId"
         placeholder="分类"
         clearable
@@ -17,14 +17,14 @@
       >
         <el-option
           v-for="item in categoryOptions"
-          :key="item.id"
-          :label="item.name"
-          :value="item.id"
+          :key="item.categoryId"
+          :label="item.categoryName"
+          :value="item.categoryId"
         />
-      </el-select>
-      <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+      </el-select> -->
+      <!-- <el-button class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         搜索
-      </el-button>
+      </el-button> -->
       <el-button class="filter-item" type="primary" icon="el-icon-plus" @click="handleCreate">
         添加菜品
       </el-button>
@@ -38,31 +38,51 @@
       highlight-current-row
       style="width: 100%;"
     >
-      <el-table-column label="ID" prop="id" align="center" width="80" />
-      <el-table-column label="图片" align="center" width="100">
+      <el-table-column label="ID" prop="dishId" align="center" width="80" />
+      <el-table-column label="菜品图片" align="center" width="120">
         <template slot-scope="{row}">
           <el-image
-            style="width: 50px; height: 50px"
-            :src="row.image"
+            :src="row.url"
+            :preview-src-list="[row.url]"
+            style="width: 80px; height: 80px"
             fit="cover"
           />
         </template>
       </el-table-column>
-      <el-table-column label="名称" prop="name" align="center" />
-      <el-table-column label="分类" prop="categoryName" align="center" />
-      <el-table-column label="价格" prop="price" align="center">
+      <el-table-column label="菜品名称" prop="dishName" align="center" />
+      <el-table-column label="分类" align="center" width="100">
         <template slot-scope="{row}">
-          ¥{{ row.price }}
+          <span>{{ getCategoryName(row.categoryId) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="状态" prop="status" align="center">
+      <el-table-column label="价格" align="center" width="120">
         <template slot-scope="{row}">
-          <el-tag :type="row.status === 1 ? 'success' : 'info'">
-            {{ row.status === 1 ? '上架' : '下架' }}
+          <div>原价：¥{{ row.price }}</div>
+          <div v-if="row.isSpecial === 1" style="color: #f56c6c">
+            特价：¥{{ Number(row.specialprice).toFixed(1) }}
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column label="配料" prop="ingredients" align="center" show-overflow-tooltip />
+      <el-table-column label="营养信息" prop="nutritionInfo" align="center" show-overflow-tooltip />
+      <el-table-column label="特价状态" align="center" width="100">
+        <template slot-scope="{row}">
+          <el-tag :type="row.isSpecial === 1 ? 'danger' : 'info'">
+            {{ row.isSpecial === 1 ? '特价中' : '正常' }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" prop="createTime" align="center" />
+      <el-table-column label="评分" align="center" width="100">
+        <template slot-scope="{row}">
+          <el-rate
+            v-model="row.rating"
+            disabled
+            show-score
+            text-color="#ff9900"
+            score-template="{value}"
+          />
+        </template>
+      </el-table-column>
       <el-table-column label="操作" align="center" width="230">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
@@ -87,7 +107,7 @@
       @pagination="getList"
     />
 
-    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible">
+    <el-dialog :title="dialogStatus === 'create' ? '新增菜品' : '编辑菜品'" :visible.sync="dialogVisible">
       <el-form
         ref="dataForm"
         :rules="rules"
@@ -95,46 +115,47 @@
         label-position="left"
         label-width="100px"
       >
-        <el-form-item label="菜品名称" prop="name">
-          <el-input v-model="temp.name" />
+        <el-form-item label="菜品名称" prop="dishName">
+          <el-input v-model="temp.dishName" />
         </el-form-item>
         <el-form-item label="分类" prop="categoryId">
-          <el-select v-model="temp.categoryId" placeholder="请选择">
+          <el-select v-model="temp.categoryId" placeholder="请选择分类">
             <el-option
               v-for="item in categoryOptions"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
+              :key="item.categoryId"
+              :label="item.categoryName"
+              :value="item.categoryId"
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="价格" prop="price">
-          <el-input-number v-model="temp.price" :precision="2" :step="0.1" :min="0" />
+        <el-form-item label="图片链接" prop="url">
+          <el-input v-model="temp.url" />
         </el-form-item>
-        <el-form-item label="图片" prop="image">
-          <el-upload
-            class="avatar-uploader"
-            action="/api/upload"
-            :show-file-list="false"
-            :on-success="handleImageSuccess"
-            :before-upload="beforeImageUpload"
-          >
-            <img v-if="temp.image" :src="temp.image" class="avatar">
-            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-          </el-upload>
+        <el-form-item label="原价" prop="price">
+          <el-input-number v-model="temp.price" :min="0" :precision="2" :step="0.1" />
         </el-form-item>
-        <el-form-item label="状态" prop="status">
-          <el-radio-group v-model="temp.status">
-            <el-radio :label="1">上架</el-radio>
-            <el-radio :label="0">下架</el-radio>
-          </el-radio-group>
+        <el-form-item label="是否特价" prop="isSpecial">
+          <el-switch
+            v-model="temp.isSpecial"
+            :active-value="1"
+            :inactive-value="0"
+          />
+        </el-form-item>
+        <el-form-item v-if="temp.isSpecial === 1" label="特价" prop="specialprice">
+          <el-input-number v-model="temp.specialprice" :min="0" :max="temp.price" :precision="1" :step="0.1" />
+        </el-form-item>
+        <el-form-item label="配料" prop="ingredients">
+          <el-input v-model="temp.ingredients" type="textarea" :rows="2" />
+        </el-form-item>
+        <el-form-item label="营养信息" prop="nutritionInfo">
+          <el-input v-model="temp.nutritionInfo" type="textarea" :rows="2" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">
           取消
         </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
+        <el-button type="primary" @click="dialogStatus === 'create' ? createData() : updateData()">
           确定
         </el-button>
       </div>
@@ -151,6 +172,13 @@ export default {
   name: 'Dish',
   components: { Pagination },
   data() {
+    const validateSpecialPrice = (rule, value, callback) => {
+      if (this.temp.isSpecial === 1 && (!value || value >= this.temp.price)) {
+        callback(new Error('特价必须小于原价'))
+      } else {
+        callback()
+      }
+    }
     return {
       list: [],
       total: 0,
@@ -164,21 +192,23 @@ export default {
       categoryOptions: [],
       dialogVisible: false,
       dialogStatus: '',
-      dialogTitle: '',
       temp: {
-        id: undefined,
-        name: '',
+        dishId: undefined,
+        dishName: '',
         categoryId: undefined,
         price: 0,
-        image: '',
-        status: 1
+        ingredients: '',
+        nutritionInfo: '',
+        isSpecial: 0,
+        url: '',
+        specialprice: 0
       },
       rules: {
-        name: [{ required: true, message: '请输入菜品名称', trigger: 'blur' }],
+        dishName: [{ required: true, message: '请输入菜品名称', trigger: 'blur' }],
         categoryId: [{ required: true, message: '请选择分类', trigger: 'change' }],
         price: [{ required: true, message: '请输入价格', trigger: 'blur' }],
-        image: [{ required: true, message: '请上传图片', trigger: 'change' }],
-        status: [{ required: true, message: '请选择状态', trigger: 'change' }]
+        url: [{ required: true, message: '请输入图片链接', trigger: 'blur' }],
+        specialprice: [{ validator: validateSpecialPrice, trigger: 'blur' }]
       }
     }
   },
@@ -190,9 +220,9 @@ export default {
     async getList() {
       this.listLoading = true
       try {
-        const { data } = await getDishList(this.listQuery)
-        this.list = data.list
-        this.total = data.total
+        const response = await getDishList()
+        this.list = response.data
+        this.total = response.total
       } catch (error) {
         console.error('获取菜品列表失败:', error)
       }
@@ -212,33 +242,35 @@ export default {
     },
     resetTemp() {
       this.temp = {
-        id: undefined,
-        name: '',
+        dishId: undefined,
+        dishName: '',
         categoryId: undefined,
         price: 0,
-        image: '',
-        status: 1
+        ingredients: '',
+        nutritionInfo: '',
+        isSpecial: 0,
+        url: '',
+        specialprice: 0
       }
     },
     handleCreate() {
       this.resetTemp()
       this.dialogStatus = 'create'
-      this.dialogTitle = '添加菜品'
       this.dialogVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    createData() {
+    async createData() {
       this.$refs['dataForm'].validate(async (valid) => {
         if (valid) {
           try {
             await addDish(this.temp)
             this.dialogVisible = false
-            this.$message.success('添加成功')
+            this.$message.success('创建成功')
             this.getList()
           } catch (error) {
-            console.error('添加菜品失败:', error)
+            console.error('创建菜品失败:', error)
           }
         }
       })
@@ -246,18 +278,16 @@ export default {
     handleUpdate(row) {
       this.temp = Object.assign({}, row)
       this.dialogStatus = 'update'
-      this.dialogTitle = '编辑菜品'
       this.dialogVisible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
     },
-    updateData() {
+    async updateData() {
       this.$refs['dataForm'].validate(async (valid) => {
         if (valid) {
           try {
-            const { id } = this.temp
-            await updateDish(id, this.temp)
+            await updateDish(this.temp)
             this.dialogVisible = false
             this.$message.success('更新成功')
             this.getList()
@@ -274,7 +304,7 @@ export default {
         type: 'warning'
       }).then(async () => {
         try {
-          await deleteDish(row.id)
+          await deleteDish(row.dishId)
           this.$message.success('删除成功')
           this.getList()
         } catch (error) {
@@ -282,30 +312,16 @@ export default {
         }
       })
     },
-    handleImageSuccess(res) {
-      this.temp.image = res.data
-    },
-    beforeImageUpload(file) {
-      const isJPG = file.type === 'image/jpeg'
-      const isPNG = file.type === 'image/png'
-      const isLt2M = file.size / 1024 / 1024 < 2
-
-      if (!isJPG && !isPNG) {
-        this.$message.error('上传图片只能是 JPG/PNG 格式!')
-        return false
-      }
-      if (!isLt2M) {
-        this.$message.error('上传图片大小不能超过 2MB!')
-        return false
-      }
-      return true
+    getCategoryName(categoryId) {
+      const category = this.categoryOptions.find(item => item.categoryId === categoryId)
+      return category ? category.categoryName : '未知分类'
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.dish-container {
+.app-container {
   padding: 20px;
   
   .filter-container {
@@ -319,32 +335,24 @@ export default {
     }
   }
   
-  .avatar-uploader {
-    border: 1px dashed #d9d9d9;
-    border-radius: 6px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    width: 100px;
-    height: 100px;
+  .el-table {
+    margin-top: 15px;
     
-    &:hover {
-      border-color: #409EFF;
+    .el-image {
+      border-radius: 4px;
+      border: 1px solid #ebeef5;
+      transition: all 0.3s;
+      
+      &:hover {
+        transform: scale(1.05);
+        box-shadow: 0 2px 12px 0 rgba(0,0,0,0.1);
+      }
     }
-    
-    .avatar-uploader-icon {
-      font-size: 28px;
-      color: #8c939d;
-      width: 100px;
-      height: 100px;
-      line-height: 100px;
-      text-align: center;
-    }
-    
-    .avatar {
-      width: 100px;
-      height: 100px;
-      display: block;
+  }
+  
+  .el-dialog {
+    .el-select {
+      width: 100%;
     }
   }
 }
