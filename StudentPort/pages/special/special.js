@@ -66,8 +66,8 @@ Page({
     }
   },
 
-  // 跳转到菜品详情
-  navigateToDetail: function(e) {
+  // 导航到菜品详情页
+  navigateToDishDetail: function(e) {
     const dishId = e.currentTarget.dataset.id;
     wx.navigateTo({
       url: `/pages/dishDetail/dishDetail?id=${dishId}`

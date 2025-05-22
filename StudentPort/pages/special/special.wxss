@@ -1,10 +1,14 @@
 .container {
   padding: 20rpx;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .special-list {
   display: flex;
   flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .special-item {
@@ -13,6 +17,8 @@
   margin-bottom: 20rpx;
   overflow: hidden;
   box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.1);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .dish-image {
@@ -22,6 +28,8 @@
 
 .dish-info {
   padding: 20rpx;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .dish-name {

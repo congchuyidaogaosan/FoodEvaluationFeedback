@@ -41,10 +41,10 @@
           <i class="el-icon-data-analysis"></i>
           <span>评价统计</span>
         </el-menu-item>
-        <el-menu-item index="/notice">
+        <!-- <el-menu-item index="/notice">
           <i class="el-icon-bell"></i>
           <span>通知发布</span>
-        </el-menu-item>
+        </el-menu-item> -->
       </el-menu>
     </div>
     <div class="main-container">

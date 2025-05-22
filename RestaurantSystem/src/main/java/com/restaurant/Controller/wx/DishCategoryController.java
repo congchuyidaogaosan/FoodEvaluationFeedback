@@ -18,31 +18,31 @@ public class DishCategoryController {
     private DishCategoryService dishService;
 
 
-    @GetMapping()
-    public Result list(){
-        List<DishCategory> list = dishService.list();
-        return Result.ok(list);
-    }
+        @GetMapping()
+        public Result list(){
+            List<DishCategory> list = dishService.list();
+            return Result.ok(list);
+        }
 
-    @PostMapping("save")
-    public Result save(@RequestBody DishCategory dish){
+        @PostMapping("save")
+        public Result save(@RequestBody DishCategory dish){
 
-        boolean save = dishService.save(dish);
-        return Result.ok();
-    }
+            boolean save = dishService.save(dish);
+            return Result.ok();
+        }
 
-    @PutMapping("update")
-    public Result update(@RequestBody DishCategory dish){
+        @PutMapping("update")
+        public Result update(@RequestBody DishCategory dish){
 
-        boolean save = dishService.updateById(dish);
-        return Result.ok();
-    }
+            boolean save = dishService.updateById(dish);
+            return Result.ok();
+        }
 
-    @DeleteMapping("del/{id}")
-    public Result del(@PathVariable("id")Integer id){
+        @DeleteMapping("del/{id}")
+        public Result del(@PathVariable("id")Integer id){
 
-        boolean byId = dishService.removeById(id);
-        return Result.ok();
-    }
+            boolean byId = dishService.removeById(id);
+            return Result.ok();
+        }
 
 }

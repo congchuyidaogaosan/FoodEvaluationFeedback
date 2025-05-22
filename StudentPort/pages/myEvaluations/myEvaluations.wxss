@@ -1,5 +1,7 @@
 .container {
   padding: 30rpx;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .loading, .empty {
@@ -9,9 +11,27 @@
   font-size: 28rpx;
 }
 
+.empty-tip {
+  margin-top: 20rpx;
+  font-size: 24rpx;
+  color: #bbb;
+}
+
+.debug-info {
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+  background-color: #f8f8f8;
+  border: 1px solid #eee;
+  border-radius: 8rpx;
+  font-size: 24rpx;
+  color: #666;
+}
+
 .evaluation-list {
   display: flex;
   flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .evaluation-item {
@@ -20,11 +40,15 @@
   padding: 20rpx;
   margin-bottom: 20rpx;
   box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.1);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .dish-info {
   display: flex;
   margin-bottom: 20rpx;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .dish-image {
@@ -32,12 +56,16 @@
   height: 120rpx;
   border-radius: 8rpx;
   margin-right: 20rpx;
+  background-color: #f0f0f0;
 }
 
 .dish-detail {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  flex: 1;
+  width: calc(100% - 140rpx);
+  box-sizing: border-box;
 }
 
 .dish-name {
@@ -55,6 +83,8 @@
   display: flex;
   flex-wrap: wrap;
   margin-bottom: 20rpx;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .score-item {
@@ -81,4 +111,6 @@
   font-size: 26rpx;
   color: #333;
   line-height: 1.6;
+  width: 100%;
+  box-sizing: border-box;
 } 

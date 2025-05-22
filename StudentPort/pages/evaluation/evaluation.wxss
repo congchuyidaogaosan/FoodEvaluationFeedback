@@ -1,5 +1,7 @@
 .container {
   padding: 30rpx;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .loading {
@@ -16,11 +18,15 @@
   overflow: hidden;
   margin-bottom: 30rpx;
   box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.1);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .dish-image {
   width: 100%;
   height: 400rpx;
+  background-color: #f5f5f5;
+  object-fit: cover;
 }
 
 .dish-detail {
@@ -48,6 +54,8 @@
   padding: 20rpx;
   margin-bottom: 30rpx;
   box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.1);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .score-item {
@@ -92,6 +100,8 @@
   padding: 20rpx;
   border-radius: 8rpx;
   font-size: 32rpx;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .btn-hover {

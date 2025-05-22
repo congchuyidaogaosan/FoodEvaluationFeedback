@@ -1,0 +1,88 @@
+<view class="container">
+  <view wx:if="{{loading}}" class="loading">
+    <text>加载中...</text>
+  </view>
+
+  <block wx:else>
+    <!-- 菜品信息 -->
+    <view class="dish-header">
+      <image class="dish-image" src="{{dishInfo.url}}" mode="aspectFill"></image>
+      <view class="dish-info">
+        <view class="dish-name">{{dishInfo.dishName}}</view>
+        <view class="price-box">
+          <text class="dish-price">¥{{dishInfo.price}}</text>
+          <text class="special-price" wx:if="{{dishInfo.isSpecial === 1}}">特价:¥{{dishInfo.specialprice}}</text>
+        </view>
+        <view class="dish-rating">
+          <text>评分: {{dishInfo.rating || '暂无评分'}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 菜品详情 -->
+    <view class="detail-section">
+      <view class="section-title">菜品详情</view>
+      <view class="detail-content">
+        <view class="info-item">
+          <view class="info-label">原料:</view>
+          <view class="info-value">{{dishInfo.ingredients || '暂无信息'}}</view>
+        </view>
+        <view class="info-item">
+          <view class="info-label">营养信息:</view>
+          <view class="info-value">{{dishInfo.nutritionInfo || '暂无信息'}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 评价按钮 -->
+    <view class="action-btn" bindtap="navigateToEvaluation">
+      <text>我要评价</text>
+    </view>
+
+    <!-- 评价列表 -->
+    <view class="evaluation-section">
+      <view class="section-title">评价列表 ({{evaluations.length}})</view>
+      
+      <view wx:if="{{evaluations.length === 0}}" class="no-evaluations">
+        <text>暂无评价，快来评价这道菜吧！</text>
+      </view>
+
+      <view class="evaluation-list" wx:else>
+        <block wx:for="{{evaluations}}" wx:key="evalId">
+          <view class="evaluation-item">
+            <view class="user-info">
+              <image class="user-avatar" src="{{item.userAvatar || '../../images/default-avatar.png'}}" mode="aspectFill"></image>
+              <view class="user-detail">
+                <text class="user-name">{{item.userName || '匿名用户'}}</text>
+                <text class="eval-time">{{item.evalTime}}</text>
+              </view>
+            </view>
+
+            <view class="scores">
+              <view class="score-item">
+                <text>口味</text>
+                <text class="score">{{item.tasteScore}}分</text>
+              </view>
+              <view class="score-item">
+                <text>色泽</text>
+                <text class="score">{{item.colorScore}}分</text>
+              </view>
+              <view class="score-item">
+                <text>分量</text>
+                <text class="score">{{item.quantityScore}}分</text>
+              </view>
+              <view class="score-item">
+                <text>性价比</text>
+                <text class="score">{{item.pricePerformanceScore}}分</text>
+              </view>
+            </view>
+
+            <view class="comment" wx:if="{{item.comment}}">
+              <text>{{item.comment}}</text>
+            </view>
+          </view>
+        </block>
+      </view>
+    </view>
+  </block>
+</view> 

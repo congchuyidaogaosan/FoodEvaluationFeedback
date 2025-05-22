@@ -31,14 +31,14 @@ public class  StudentController {
         return Result.ok();
     }
 
-    @PutMapping("update")
+    @PostMapping("update")
     public Result update(@RequestBody Student dish){
 
         boolean save = dishService.updateById(dish);
         return Result.ok();
     }
 
-    @DeleteMapping("del/{id}")
+    @PostMapping("del/{id}")
     public Result del(@PathVariable("id")Integer id){
 
         boolean byId = dishService.removeById(id);

@@ -14,17 +14,21 @@
       highlight-current-row
       style="width: 100%;"
     >
-      <el-table-column label="ID" prop="id" align="center" width="80" />
-      <el-table-column label="标题" prop="title" align="center" />
+      <el-table-column label="ID" prop="feedbackId" align="center" width="80" />
       <el-table-column label="内容" prop="content" align="center" />
-      <el-table-column label="状态" prop="status" align="center">
+      <el-table-column label="状态" prop="isHandled" align="center">
         <template slot-scope="{row}">
-          <el-tag :type="row.status === 1 ? 'success' : 'info'">
-            {{ row.status === 1 ? '已发布' : '未发布' }}
+          <el-tag :type="row.isHandled === 1 ? 'success' : 'info'">
+            {{ row.isHandled === 1 ? '已处理' : '未处理' }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" prop="createTime" align="center" />
+      <el-table-column label="处理结果" prop="handleResult" align="center">
+        <template slot-scope="{row}">
+          {{ row.handleResult || '-' }}
+        </template>
+      </el-table-column>
+      <el-table-column label="反馈时间" prop="feedbackTime" align="center" />
       <el-table-column label="操作" align="center" width="230">
         <template slot-scope="{row}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
@@ -102,10 +106,11 @@ export default {
       dialogStatus: '',
       dialogTitle: '',
       temp: {
-        id: undefined,
-        title: '',
+        feedbackId: undefined,
         content: '',
-        status: 0
+        isHandled: 0,
+        handleResult: '',
+        feedbackTime: ''
       },
       rules: {
         title: [{ required: true, message: '请输入标题', trigger: 'blur' }],
@@ -122,8 +127,8 @@ export default {
       this.listLoading = true
       try {
         const { data } = await getNoticeList(this.listQuery)
-        this.list = data.list
-        this.total = data.total
+        this.list = data
+        this.total = data.length
       } catch (error) {
         console.error('获取通知列表失败:', error)
       }
@@ -131,10 +136,11 @@ export default {
     },
     resetTemp() {
       this.temp = {
-        id: undefined,
-        title: '',
+        feedbackId: undefined,
         content: '',
-        status: 0
+        isHandled: 0,
+        handleResult: '',
+        feedbackTime: ''
       }
     },
     handleCreate() {
@@ -150,7 +156,11 @@ export default {
       this.$refs['dataForm'].validate(async (valid) => {
         if (valid) {
           try {
-            await addNotice(this.temp)
+            await addNotice({
+              content: this.temp.content,
+              isHandled: this.temp.isHandled,
+              handleResult: this.temp.handleResult
+            })
             this.dialogVisible = false
             this.$message.success('发布成功')
             this.getList()
@@ -173,8 +183,12 @@ export default {
       this.$refs['dataForm'].validate(async (valid) => {
         if (valid) {
           try {
-            const { id } = this.temp
-            await updateNotice(id, this.temp)
+            const { feedbackId } = this.temp
+            await updateNotice(feedbackId, {
+              content: this.temp.content,
+              isHandled: this.temp.isHandled,
+              handleResult: this.temp.handleResult
+            })
             this.dialogVisible = false
             this.$message.success('更新成功')
             this.getList()
@@ -185,17 +199,17 @@ export default {
       })
     },
     handleDelete(row) {
-      this.$confirm('确定要删除该通知吗?', '提示', {
+      this.$confirm('确定要删除该反馈吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(async () => {
         try {
-          await deleteNotice(row.id)
+          await deleteNotice(row.feedbackId)
           this.$message.success('删除成功')
           this.getList()
         } catch (error) {
-          console.error('删除通知失败:', error)
+          console.error('删除反馈失败:', error)
         }
       })
     }

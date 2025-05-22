@@ -5,31 +5,38 @@ Page({
   data: {
     feedbackList: [],
     feedbackType: 'suggestion',
-    feedbackContent: '',
+    content: '',
     loading: true,
     submitting: false
   },
 
   onLoad: function() {
     if (!app.checkLogin()) return;
-    this.getFeedbackList();
+    this.loadFeedbackList();
   },
 
   onShow: function() {
     if (!app.checkLogin()) return;
-    this.getFeedbackList();
+    this.loadFeedbackList();
   },
 
-  // 获取反馈列表
-  async getFeedbackList() {
+  // 加载反馈列表
+  async loadFeedbackList() {
+    this.setData({ loading: true });
     try {
       const res = await feedbackApi.getFeedbackList();
-      this.setData({
-        feedbackList: res.data,
-        loading: false
-      });
+      if (res.code === 200) {
+        this.setData({
+          feedbackList: res.data || []
+        });
+      }
     } catch (error) {
       console.error('获取反馈列表失败:', error);
+      wx.showToast({
+        title: '获取反馈列表失败',
+        icon: 'none'
+      });
+    } finally {
       this.setData({ loading: false });
     }
   },
@@ -42,9 +49,9 @@ Page({
   },
 
   // 输入反馈内容
-  onContentInput: function(e) {
+  onContentChange: function(e) {
     this.setData({
-      feedbackContent: e.detail.value
+      content: e.detail.value
     });
   },
 
@@ -52,7 +59,7 @@ Page({
   async submitFeedback() {
     if (!app.checkLogin()) return;
 
-    if (!this.data.feedbackContent.trim()) {
+    if (!this.data.content.trim()) {
       wx.showToast({
         title: '请输入反馈内容',
         icon: 'none'
@@ -63,22 +70,22 @@ Page({
     this.setData({ submitting: true });
 
     try {
-      await feedbackApi.submitFeedback({
-        type: this.data.feedbackType,
-        content: this.data.feedbackContent
-      });
+      const res = await feedbackApi.submitFeedback(this.data.content);
+      if (res.code === 200) {
+        wx.showToast({
+          title: '提交成功',
+          icon: 'success'
+        });
 
-      wx.showToast({
-        title: '提交成功',
-        icon: 'success'
-      });
+        this.setData({
+          content: ''
+        });
 
-      this.setData({
-        feedbackContent: '',
-        feedbackType: 'suggestion'
-      });
-
-      this.getFeedbackList();
+        // 刷新反馈列表
+        this.loadFeedbackList();
+      } else {
+        throw new Error(res.msg || '提交失败');
+      }
     } catch (error) {
       console.error('提交反馈失败:', error);
       wx.showToast({

@@ -4,13 +4,18 @@
   </view>
 
   <block wx:else>
-    <view class="evaluation-list">
-      <block wx:for="{{evaluations}}" wx:key="id">
+    <!-- 调试信息 -->
+    <view class="debug-info" wx:if="{{!evaluations || evaluations.length === 0}}">
+      <text>数据状态: {{evaluations ? '数组为空' : '数据为null'}}</text>
+    </view>
+    
+    <view class="evaluation-list" wx:if="{{evaluations && evaluations.length > 0}}">
+      <block wx:for="{{evaluations}}" wx:key="evalId">
         <view class="evaluation-item" bindtap="navigateToDishDetail" data-id="{{item.dishId}}">
           <view class="dish-info">
             <image class="dish-image" src="{{item.dishImage}}" mode="aspectFill"></image>
             <view class="dish-detail">
-              <text class="dish-name">{{item.dishName}}</text>
+              <text class="dish-name">{{item.dishName || '未知菜品'}}</text>
               <text class="evaluation-time">{{item.evalTime}}</text>
             </view>
           </view>
@@ -41,8 +46,9 @@
       </block>
     </view>
 
-    <view wx:if="{{!loading && evaluations.length === 0}}" class="empty">
+    <view wx:if="{{!loading && (!evaluations || evaluations.length === 0)}}" class="empty">
       <text>暂无评价记录</text>
+      <view class="empty-tip">去点评一些菜品吧~</view>
     </view>
   </block>
 </view>

@@ -6,9 +6,14 @@
   <block wx:else>
     <!-- 菜品信息 -->
     <view class="dish-info">
-      <image class="dish-image" src="{{dishInfo.imageUrl}}" mode="aspectFill"></image>
+      <image 
+        class="dish-image" 
+        src="{{dishInfo.url || '../../images/default-dish.png'}}" 
+        mode="aspectFill" 
+        binderror="onImageError"
+      ></image>
       <view class="dish-detail">
-        <text class="dish-name">{{dishInfo.name}}</text>
+        <text class="dish-name">{{dishInfo.dishName}}</text>
         <text class="dish-price">¥{{dishInfo.price}}</text>
       </view>
     </view>

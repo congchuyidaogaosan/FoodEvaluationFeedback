@@ -1,4 +1,4 @@
-const baseUrl = 'http://localhost:8081/api'; // 替换为您的实际后端API地址
+const baseUrl = 'http://localhost:8084'; // 替换为您的实际后端API地址
 
 const request = (url, method, data) => {
   return new Promise((resolve, reject) => {
@@ -29,9 +29,9 @@ const userApi = {
   // 微信登录
   wxLogin: (code) => request('/WXLogin/setCode?code='+code, 'POST'),
   // 获取用户信息
-  getUserInfo: () => request('/user/info', 'GET'),
+  getUserInfo: () => request('/Student/info', 'GET'),
   // 更新用户信息
-  updateUserInfo: (data) => request('/user/update', 'POST', data)
+  updateUserInfo: (data) => request('/Student/update', 'POST', data)
 };
 
 // 菜品相关API
@@ -52,23 +52,61 @@ const dishApi = {
 // 评价相关API
 const evaluationApi = {
   // 提交评价
-  submitEvaluation: (data) => request('/evaluations', 'POST', data),
+  submitEvaluation: (data) => {
+    const userInfo = wx.getStorageSync('userInfo');
+    if (!userInfo || !userInfo.studentId) {
+      return Promise.reject(new Error('用户未登录'));
+    }
+    const evalData = {
+      ...data,
+      studentId: userInfo.studentId,
+      tasteScore: data.taste || 5,
+      colorScore: data.color || 5,
+      quantityScore: data.quantity || 5,
+      pricePerformanceScore: data.pricePerformance || 5
+    };
+    return request('/evaluations/save', 'POST', evalData);
+  },
   // 获取我的评价列表
-  getMyEvaluations: (data) => request('/evaluations/my', 'post',data),
+  getMyEvaluations: () => {
+    const userInfo = wx.getStorageSync('userInfo');
+    console.log('API中获取的用户信息:', userInfo);
+    if (!userInfo || !userInfo.studentId) {
+      console.error('用户信息不存在或没有studentId');
+      return Promise.reject(new Error('用户未登录'));
+    }
+    return request('/evaluations/my', 'POST', { studentId: userInfo.studentId });
+  },
   // 获取菜品评价列表
   getDishEvaluations: (dishId) => request('/evaluations/dish/' + dishId, 'GET'),
   // 删除评价
-  deleteEvaluation: (evalId) => request('/evaluations/' + evalId, 'DELETE')
+  deleteEvaluation: (evalId) => request('/evaluations/del/' + evalId, 'DELETE')
 };
 
 // 反馈相关API
 const feedbackApi = {
   // 提交反馈
-  submitFeedback: (content) => request('/feedback', 'POST', { content }),
+  submitFeedback: (content) => {
+    const userInfo = wx.getStorageSync('userInfo');
+    if (!userInfo || !userInfo.studentId) {
+      return Promise.reject(new Error('用户未登录'));
+    }
+    return request('/notices/save', 'POST', {
+      content: content,
+      studentId: userInfo.studentId,
+      isHandled: 0
+    });
+  },
   // 获取我的反馈列表
-  getMyFeedback: () => request('/feedback/my', 'GET'),
+  getFeedbackList: () => {
+    const userInfo = wx.getStorageSync('userInfo');
+    if (!userInfo || !userInfo.studentId) {
+      return Promise.reject(new Error('用户未登录'));
+    }
+    return request('/notices/my', 'GET', { studentId: userInfo.studentId });
+  },
   // 获取反馈详情
-  getFeedbackDetail: (feedbackId) => request('/feedback/' + feedbackId, 'GET')
+  getFeedbackDetail: (feedbackId) => request('/notices/' + feedbackId, 'GET')
 };
 
 // 通知相关API

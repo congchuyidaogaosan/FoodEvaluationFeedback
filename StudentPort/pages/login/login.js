@@ -26,8 +26,11 @@ Page({
         if (res.code) {
           try {
             const loginRes = await userApi.wxLogin(res.code);
-            wx.setStorageSync('token', loginRes.token);
-            wx.setStorageSync('userInfo', loginRes.userInfo);
+            console.log(
+              loginRes
+            );
+            wx.setStorageSync('token', loginRes.data.token);
+            wx.setStorageSync('userInfo', loginRes.data.userInfo);
 
             this.setData({ isLogin: true,userInfo:loginRes.userInfo });
             // this.getUserInfo();

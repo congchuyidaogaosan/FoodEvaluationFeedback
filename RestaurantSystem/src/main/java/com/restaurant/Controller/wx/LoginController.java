@@ -22,11 +22,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 @RestController
-@RequestMapping("/api/WXLogin")
+@RequestMapping("/WXLogin")
 public class LoginController {
 
-    private final String AppId = "wx958c331bb5b02d97";
-    private final String AppSecret = "c7d7d587e080c1dda3b07c7a6ff47f96";
+    private final String AppId = "wxb38fa1462130b7fd";
+    private final String AppSecret = "410446791109365b820d5c3f0dcb4eff";
 
 //    private final String AppSecret = "e7965d960c3a161ce50bff28eaf42b15";
 

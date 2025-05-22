@@ -5,7 +5,7 @@
   </view>
 
   <!-- 公告栏 -->
-  <view class="notice-bar">
+  <!-- <view class="notice-bar">
     <view class="notice-title">最新公告</view>
     <view class="notice-list">
       <view class="notice-item" wx:for="{{notices}}" wx:key="id">
@@ -13,7 +13,7 @@
         <view class="notice-content">{{item.feedbackTime}}</view>
       </view>
     </view>
-  </view>
+  </view> -->
 
   <!-- 分类栏 -->
   <view class="category-bar">

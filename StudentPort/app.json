@@ -1,13 +1,14 @@
 {
   "pages": [
     "pages/index/index",
+    "pages/logs/logs",
+    "pages/my/my",
     "pages/special/special",
     "pages/feedback/feedback",
-    "pages/evaluation/evaluation",
-    "pages/notice/notice",
-    "pages/my/my",
+    "pages/login/login",
     "pages/myEvaluations/myEvaluations",
-    "pages/login/login"
+    "pages/evaluation/evaluation",
+    "pages/dishDetail/dishDetail"
   ],
   "window": {
     "backgroundTextStyle": "light",
